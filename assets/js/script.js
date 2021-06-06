@@ -3,9 +3,11 @@ var tasks = {};
 var createTask = function(taskText, taskDate, taskList) {
   // create elements that make up a task item
   var taskLi = $("<li>").addClass("list-group-item");
+
   var taskSpan = $("<span>")
     .addClass("badge badge-primary badge-pill")
     .text(taskDate);
+
   var taskP = $("<p>")
     .addClass("m-1")
     .text(taskText);
@@ -45,7 +47,54 @@ var saveTasks = function() {
 };
 
 
+// This allows the user to edit a task by clicking it
+$(".list-group").on("click", "p", function() {
+  // get the textarea's current value/text
+  var text = $(this)
+    .text()
+    .trim();
 
+  // get the parent ul's id attribute
+  var textInput = $("<textarea>")
+    .addClass("form-control")
+    .val(text);
+
+  $(this).replaceWith(textInput);
+  textInput.trigger("focus");
+
+  console.log(text);
+});
+
+// What happens when the <p> elements are clicked
+$(".list-group").on("blur", "textarea", function() {
+  // get the textarea's current value/text
+var text = $(this)
+.val()
+.trim();
+
+// get the parent ul's id attribute
+var status = $(this)
+.closest(".list-group")
+.attr("id")
+.replace("list-", "");
+
+// get the task's position in the list of other li elements
+var index = $(this)
+.closest(".list-group-item")
+.index();
+
+tasks[status][index].text = text;
+saveTasks();
+
+// recreate p element
+var taskP = $("<p>")
+  .addClass("m-1")
+  .text(text);
+
+// replace textarea with p element
+$(this).replaceWith(taskP);
+
+});
 
 // modal was triggered
 $("#task-form-modal").on("show.bs.modal", function() {
